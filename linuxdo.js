@@ -8,6 +8,9 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @license      MIT
+// @icon         https://linux.do/favicon.ico
+// @updateURL    https://raw.githubusercontent.com/zhsama/linuxdo/main/linuxdo.js
+// @downloadURL  https://raw.githubusercontent.com/zhsama/linuxdo/main/linuxdo.js
 // ==/UserScript==
 
 (function () {
@@ -126,33 +129,6 @@
         } else {
             console.log("【错误】未找到按钮！")
         }
-    }
-
-    // 等待元素出现
-    function waitForElement(selector) {
-        return new Promise((resolve, reject) => {
-            const element = document.querySelector(selector);
-            if (element) {
-                resolve(element);
-                return;
-            }
-            const observer = new MutationObserver((mutations) => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    observer.disconnect();
-                    resolve(element);
-                }
-            });
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-            setTimeout(() => {
-                observer.disconnect();
-                console.log("【错误】未找到列表！")
-                reject(new Error('未找到：' + selector));
-            }, config.waitForElement);
-        });
     }
 
     // 检查并执行点赞
