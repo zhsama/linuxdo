@@ -1,16 +1,19 @@
 // ==UserScript==
 // @name         linuxdo保活
 // @namespace    http://tampermonkey.net/
-// @version      0.1.4
+// @version      0.1.5
 // @description  linuxdo自动浏览帖子，自动点赞
 // @author       zhcf1ess
 // @match        https://linux.do/*
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @license      MIT
-// @icon         https://linux.do/favicon.ico
+// @icon         https://linux.do/uploads/default/original/3X/9/d/9dd49731091ce8656e94433a26a3ef36062b3994.png
 // @updateURL    https://raw.githubusercontent.com/zhsama/linuxdo/main/linuxdo.js
 // @downloadURL  https://raw.githubusercontent.com/zhsama/linuxdo/main/linuxdo.js
+// @namespace    https://github.com/zhsama/linuxdo
+// @supportURL   https://github.com/zhsama/linuxdo
+// @homepageURL  https://github.com/zhsama/linuxdo
 // ==/UserScript==
 
 (function () {
