@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo自动浏览帖子，自动点赞
 // @namespace    http://tampermonkey.net/
-// @version      0.1.3
+// @version      0.1.4
 // @description  linuxdo自动浏览帖子，自动点赞
 // @author       zhcf1ess
 // @match        https://linux.do/*
