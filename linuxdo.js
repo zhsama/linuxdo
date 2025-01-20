@@ -34,7 +34,7 @@
         },
         // iframe 相关配置
         iframe: {
-            width: '330px',  // iframe 宽度
+            width: '325px',  // iframe 宽度
             height: '500px', // iframe 高度
             top: '64px',     // 距离顶部距离
             left: '1px',     // 距离左侧距离
@@ -107,14 +107,14 @@
         const minutes = Math.floor((runTime % 3600) / 60);
         const seconds = runTime % 60;
 
-        console.log('\n📊 统计信息');
-        console.log('-------------------');
-        console.log(`🕒 运行时间：${hours}时${minutes}分${seconds}秒`);
-        console.log(`👀 本次浏览：${stats.sessionViews}帖`);
-        console.log(`❤️ 本次点赞：${stats.sessionLikes}次`);
-        console.log(`📈 总浏览数：${stats.totalViews}帖`);
-        console.log(`💖 总点赞数：${stats.totalLikes}次`);
-        console.log('-------------------\n');
+        logger.info('\n📊 统计信息');
+        logger.info('-------------------');
+        logger.info(`🕒 运行时间：${hours}时${minutes}分${seconds}秒`);
+        logger.info(`👀 本次浏览：${stats.sessionViews}帖`);
+        logger.info(`❤️ 本次点赞：${stats.sessionLikes}次`);
+        logger.info(`📈 总浏览数：${stats.totalViews}帖`);
+        logger.info(`💖 总点赞数：${stats.totalLikes}次`);
+        logger.info('-------------------\n');
     }
 
 
@@ -130,7 +130,7 @@
         if (!currentState) {
             window.location.href = config.urls.base
         }
-        console.log(`Linuxdo助手已${!currentState ? '启用' : '禁用'}`);
+        logger.info(`Linuxdo助手已${!currentState ? '启用' : '禁用'}`);
     }
 
     // 创建开关图标
@@ -165,7 +165,7 @@
         if (chatIconLi) {
             chatIconLi.parentNode.insertBefore(iconLi, chatIconLi.nextSibling);
         } else {
-            console.log("【错误】未找到按钮！")
+            logger.error("【错误】未找到按钮！")
         }
     }
 
@@ -182,19 +182,19 @@
             // 查找点赞按钮
             const likeButton = targetWindow.document.querySelector('.btn-toggle-reaction-like');
             if (!likeButton) {
-                console.log('未找到点赞按钮');
+                logger.info('未找到点赞按钮');
                 return;
             }
 
             // 检查是否已经点赞
             if (likeButton.title.includes('移除此赞')) {
-                console.log('该帖子已点赞，跳过点赞操作。');
+                logger.info('该帖子已点赞，跳过点赞操作。');
                 return;
             }
 
             // 执行点赞
             likeButton.click();
-            console.log('点赞帖子成功');
+            logger.info('点赞帖子成功');
 
             // 更新统计
             stats.sessionLikes++;
@@ -202,14 +202,14 @@
             saveStats();
 
         } catch (error) {
-            console.error('点赞操作失败:', error);
+            logger.error('点赞操作失败:', error);
         }
     }
 
     // 获取帖子列表
     async function getTopicsList() {
         const topics = document.querySelectorAll('#list-area .title');
-        console.log(`共找到 ${topics.length} 个帖子`);
+        logger.info(`共找到 ${topics.length} 个帖子`);
 
         const topicsList = [];
         for (let i = 0; i < topics.length; i++) {
@@ -219,7 +219,7 @@
             // 检查是否是置顶帖
             const isPinned = parentElement.querySelector('.topic-statuses .pinned');
             if (isPinned) {
-                console.log(`跳过置顶的帖子：${topic.textContent.trim()}`);
+                logger.debug(`跳过置顶的帖子：${topic.textContent.trim()}`);
                 continue;
             }
 
@@ -289,7 +289,7 @@
     function shouldStopScript() {
         // 检查浏览数量
         if (stats.sessionViews >= config.maxTopics) {
-            console.log(`\n🛑 已达到最大浏览数量 ${config.maxTopics} 篇，停止脚本运行`);
+            logger.info(`\n🛑 已达到最大浏览数量 ${config.maxTopics} 篇，停止脚本运行`);
             return true;
         }
 
@@ -298,7 +298,7 @@
         if (runTime >= config.maxRunTime * 60) {
             const hours = Math.floor(runTime / 3600);
             const minutes = Math.floor((runTime % 3600) / 60);
-            console.log(`\n🛑 已达到最大运行时间 ${hours}时${minutes}分，停止脚本运行`);
+            logger.info(`\n🛑 已达到最大运行时间 ${hours}时${minutes}分，停止脚本运行`);
             return true;
         }
 
@@ -309,7 +309,7 @@
     function stopScript() {
         GM_setValue('linuxdoHelperEnabled', false);
         printStats();
-        console.log('\n✨ 脚本已自动停止运行');
+        logger.info('\n✨ 脚本已自动停止运行');
         window.location.href = config.urls.connect;
     }
 
@@ -333,7 +333,7 @@
                     }
 
                     if (!getSwitchState()) {
-                        console.log('脚本已停止');
+                        logger.info('脚本已停止');
                         return;
                     }
 
@@ -369,7 +369,7 @@
                 await browseTopics();
             }
         } catch (error) {
-            console.error('脚本执行出错:', error);
+            logger.error('脚本执行出错:', error);
         }
     }
 
