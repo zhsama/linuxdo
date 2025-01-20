@@ -21,10 +21,8 @@
 
     // 配置对象
     const config = {
-        scrollInterval: 300, // 滚动间隔(毫秒)
-        scrollStep: 880, // 每次滚动的像素
-        waitForElement: 2000, // 找不到评论的最大时间
-        waitingTime: 1, // 看完评论等待 N 秒进入新帖子
+        scrollInterval: 1500, // 滚动间隔(毫秒)
+        scrollStep: 500, // 每次滚动的像素
         viewCountThreshold: 500, // 浏览量阈值，超过此值才会点赞
         scrollDuration: 30, // 滚动持续时间（秒）
         maxTopics: 100, // 总浏览帖子数量，达到即停
@@ -33,6 +31,43 @@
             base: 'https://linux.do',
             new: 'https://linux.do/new',
             connect: 'https://connect.linux.do'
+        },
+        // iframe 相关配置
+        iframe: {
+            width: '330px',  // iframe 宽度
+            height: '500px', // iframe 高度
+            top: '64px',     // 距离顶部距离
+            left: '1px',     // 距离左侧距离
+            position: 'fixed',
+            zIndex: '9999'
+        },
+        // 日志配置
+        logging: {
+            enabled: false, // 是否启用日志
+            level: {
+                error: true,
+                info: true,
+                debug: false
+            }
+        }
+    };
+
+    // 添加日志工具
+    const logger = {
+        error: (...args) => {
+            if (config.logging.enabled && config.logging.level.error) {
+                console.error(...args);
+            }
+        },
+        info: (...args) => {
+            if (config.logging.enabled && config.logging.level.info) {
+                console.log(...args);
+            }
+        },
+        debug: (...args) => {
+            if (config.logging.enabled && config.logging.level.debug) {
+                console.debug(...args);
+            }
         }
     };
 
@@ -52,9 +87,9 @@
             stats.totalViews = savedStats.totalViews || 0;
             stats.totalLikes = savedStats.totalLikes || 0;
         }
-        console.log('📊 加载历史统计数据：');
-        console.log(`   总浏览数：${stats.totalViews}`);
-        console.log(`   总点赞数：${stats.totalLikes}`);
+        logger.info('📊 加载历史统计数据：');
+        logger.info(`📈 总浏览数：${stats.totalViews}`);
+        logger.info(`💖 总点赞数：${stats.totalLikes}`);
     }
 
     // 保存统计数据
@@ -204,28 +239,29 @@
 
     // 浏览单个帖子
     async function browseTopic(topic) {
-        console.log(`打开帖子：${topic.title}`);
+        logger.info(`打开帖子：${topic.title}`);
 
         // 更新统计
         stats.sessionViews++;
         stats.totalViews++;
         saveStats();
 
-        // 在新标签页中打开帖子
-        const newTab = window.open(topic.url, '_blank');
-        if (!newTab) {
-            console.error('无法打开新标签页，请检查浏览器是否阻止弹窗');
-            return;
-        }
+        // 创建一个隐藏的 iframe 来加载帖子
+        const iframe = document.createElement('iframe');
+        Object.assign(iframe.style, config.iframe);
+        iframe.src = topic.url;
+        document.body.appendChild(iframe);
 
-        // 等待新页面加载完成
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        // 等待 iframe 加载完成
+        await new Promise(resolve => {
+            iframe.onload = resolve;
+        });
 
         // 如果浏览量超过阈值，执行点赞
         if (topic.views > config.viewCountThreshold) {
-            console.log(`📈 当前帖子浏览量为${topic.views}`);
-            console.log(`🥳 当前帖子浏览量大于设定值${config.viewCountThreshold}，开始进行点赞操作`);
-            await checkAndLike(newTab);
+            logger.info(`📈 当前帖子浏览量为${topic.views}`);
+            logger.info(`🥳 当前帖子浏览量大于设定值${config.viewCountThreshold}，开始进行点赞操作`);
+            await checkAndLike(iframe.contentWindow);
         }
 
         // 滚动浏览帖子内容
@@ -234,17 +270,18 @@
             const scrollInterval = setInterval(() => {
                 if (Date.now() - startTime >= config.scrollDuration * 1000) {
                     clearInterval(scrollInterval);
-                    newTab.close();
+                    // 移除 iframe
+                    document.body.removeChild(iframe);
                     // 打印统计信息
                     printStats();
-                    resolve(); // 浏览完成后解决 Promise
+                    resolve();
                     return;
                 }
-                newTab.scrollBy(0, config.scrollStep);
+                iframe.contentWindow.scrollBy(0, config.scrollStep);
             }, config.scrollInterval);
         });
 
-        // 等待一段时间确保页面完全关闭
+        // 等待一段时间确保清理完成
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
@@ -309,7 +346,7 @@
             }
 
         } catch (error) {
-            console.error('浏览帖子时出错:', error);
+            logger.error('浏览帖子时出错:', error);
         }
     }
 
