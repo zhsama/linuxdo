@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo保活
 // @namespace    http://tampermonkey.net/
-// @version      0.1.9
+// @version      0.1.10
 // @description  linuxdo自动浏览帖子，自动点赞
 // @author       zhcf1ess
 // @match        https://linux.do/*
@@ -181,14 +181,14 @@
             if (viewCount <= config.viewCountThreshold) return;
 
             // 查找点赞按钮
-            const likeButton = targetWindow.document.querySelector('.btn-toggle-reaction-like');
+            const likeButton = targetWindow.document.querySelector('button.btn-toggle-reaction-like');
             if (!likeButton) {
                 logger.info('未找到点赞按钮');
                 return;
             }
 
             // 检查是否已经点赞
-            if (likeButton.title.includes('移除此赞')) {
+            if (likeButton.title.includes('删除此 heart 回应')) {
                 logger.info('该帖子已点赞，跳过点赞操作。');
                 return;
             }
