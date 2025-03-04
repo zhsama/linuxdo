@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo保活
 // @namespace    http://tampermonkey.net/
-// @version      0.1.8
+// @version      0.1.9
 // @description  linuxdo自动浏览帖子，自动点赞
 // @author       zhcf1ess
 // @match        https://linux.do/*
@@ -14,6 +14,7 @@
 // @namespace    https://github.com/zhsama/linuxdo
 // @supportURL   https://github.com/zhsama/linuxdo
 // @homepageURL  https://github.com/zhsama/linuxdo
+// @noframes
 // ==/UserScript==
 
 (function () {
@@ -22,7 +23,7 @@
     // 配置对象
     const config = {
         scrollInterval: 1500, // 滚动间隔(毫秒)
-        scrollStep: 500, // 每次滚动的像素
+        scrollStep: 800, // 每次滚动的像素
         viewCountThreshold: 500, // 浏览量阈值，超过此值才会点赞
         scrollDuration: 30, // 滚动持续时间（秒）
         maxTopics: 100, // 总浏览帖子数量，达到即停
@@ -43,7 +44,7 @@
         },
         // 日志配置
         logging: {
-            enabled: false, // 是否启用日志
+            enabled: true, // 是否启用日志
             level: {
                 error: true,
                 info: true,
