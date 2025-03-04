@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         linuxdo保活
 // @namespace    http://tampermonkey.net/
-// @version      0.1.7
+// @version      0.1.8
 // @description  linuxdo自动浏览帖子，自动点赞
 // @author       zhcf1ess
 // @match        https://linux.do/*
@@ -249,7 +249,14 @@
         // 创建一个隐藏的 iframe 来加载帖子
         const iframe = document.createElement('iframe');
         Object.assign(iframe.style, config.iframe);
-        iframe.src = topic.url;
+
+        // 添加事件监听器来阻止iframe中的history变化影响主页面
+        window.addEventListener('popstate', function (event) {
+            event.stopPropagation();
+        }, true);
+
+        // 直接设置src，但使用随机参数来避免历史记录重复
+        iframe.src = `${topic.url}?_t=${Date.now()}`;
         document.body.appendChild(iframe);
 
         // 等待 iframe 加载完成
